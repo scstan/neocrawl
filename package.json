@@ -1,7 +1,13 @@
 {
+  "name": "NeoCrawl",
+  "version": "0.0.1",
+  "description": "NeoCrawl is built as a microservice that mediates any listing, finding or filtering request between an api and a neo4j database. The comunication is done over rest api.",
+  "author": "Silviu C. Stan [scstan]",
   "dependencies": {
+    "bluebird": "^3.1.5",
     "body-parser": "^1.14.2",
     "express": "^4.13.4",
-    "lodash": "^4.1.0"
+    "lodash": "^4.1.0",
+    "superagent": "^1.7.2"
   }
 }
