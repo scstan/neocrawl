@@ -15,13 +15,13 @@ class DB {
       let rezObj = JSON.parse(result.text).results
       rezObj = _.map(rezObj, 'data[0].row[0]')
       rezObj = rezObj[1]?rezObj:rezObj[0]
-      resolve(rezObj)
+      return resolve(rezObj)
     }
   }
   static query(queryArray, dbUrl) {
     return new Promise(_.bind((resolve, reject) => {
       request
-        .post(dbUrl)
+        .post(dbUrl  + '/db/data/transaction/commit')
         .send(this.queryTemplate(queryArray))
         .end(this.serializer(resolve, reject))
     },this))

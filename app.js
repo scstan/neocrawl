@@ -1,5 +1,5 @@
 'use strict'
-const config      = require("./config")
+const config      = require('./config')
 const routes      = require('./routes')
 const express     = require('express')
 const bodyParser  = require('body-parser')

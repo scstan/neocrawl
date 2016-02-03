@@ -5,9 +5,8 @@ class utils {
   static sendResponse(result, res) {
     return res.status(http.OK).send(result)
   }
-  static sendErr(err, res){
-    res.status(http.INTERNAL_SERVER_ERROR).send()
-    return console.log(err)
+  static sendErr(status, err, res) {
+    return res.status(http[status]).send(err)
   }
 }
 

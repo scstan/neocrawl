@@ -1,6 +1,6 @@
 'use strict';
-const database = require('./database')
+const databaseService = require('./databaseService')
 
 module.exports = {
-  database
+  databaseService
 }

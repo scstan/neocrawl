@@ -1,6 +1,6 @@
 'use strict'
-const services = require('./services')
+const databaseController = require('./controllers').databaseController
 
 module.exports = function routes (router) {
-  router.post('/setupdb', services.database.setup)
+  router.post('/setupdb', databaseController.setup)
 }
