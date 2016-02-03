@@ -81,7 +81,7 @@ class databaseService {
     return db.query([queries.labelsQuery], dbUrl)
   }
 
-  static checkDatabaseVersion (dbUrl, res) {
+  static checkDatabaseVersion (dbUrl) {
     return new Promise ((resolve, reject) => {
       request
         .get(dbUrl  + '/db/data/')

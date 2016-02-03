@@ -10,7 +10,7 @@ class databaseController {
     if ( difference.length > 0 ) { return res.status(http.BAD_REQUEST).send({missing_keys_from_body: difference})}
     let dbAlias = req.body.dbAlias
     let dbUrl    = req.body.dbUrl.replace(/\/$/,'')
-    databaseService.checkDatabaseVersion(dbUrl, res)
+    databaseService.checkDatabaseVersion(dbUrl)
       .then(()            => databaseService.getNodeLabels(dbUrl))
       .then(labels        => databaseService.queryFromLabels(_.flatten(labels), 'relationsQuery', dbUrl))
       .then(relatedLabels => databaseService.addLabelAndRelatedLabels(_.flatten(relatedLabels)))
