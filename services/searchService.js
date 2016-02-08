@@ -121,7 +121,8 @@ class searchService {
       catch (err){
         return err
       }
-      let result = {count: queryResults.pop() || 0, results: queryResults || []}
+
+      let result = {count: queryResults ? queryResults.pop() : 0, results: queryResults || []}
       if (reqQuery.debug) result.query = query
       return result
     })
