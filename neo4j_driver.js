@@ -13,7 +13,7 @@ class DB {
     return (err, result) => {
       if (err) { return reject(err) }
       let rezObj = JSON.parse(result.text).results
-      rezObj = _.map(rezObj, 'data[0].row[0]')
+      rezObj = _.map(_.flatten(_.map(rezObj, 'data')), '.row[0]')
       rezObj = rezObj[1]?rezObj:rezObj[0]
       return resolve(rezObj)
     }

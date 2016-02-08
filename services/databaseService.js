@@ -1,6 +1,5 @@
 'use strict'
-const http    = require('../utils').httpStatusCodes
-const  db     = require('../neo4j_driver')
+const db      = require('../neo4j_driver')
 const Promise = require('bluebird')
 const request = require('superagent')
 const co      = require('co')
@@ -12,10 +11,10 @@ let queries =  {
   labelsQuery: { 'statement': 'MATCH (node) RETURN collect(distinct(labels(node)))' },
   relationsQuery: { 'statement': ['MATCH (node:__label__)-[]-(relationedNode)',
                    'WITH collect(distinct(labels(relationedNode))) as relatedLabel',
-                   'RETURN collect({label: "__label__", relatedLabels:relatedLabel})'].join(' ') },
+                   'RETURN {label: "__label__", relatedLabels:relatedLabel}'].join(' ') },
   propertiesQuery: { 'statement': ['MATCH (node:__label__)',
                     'WITH collect(distinct(keys(node))) as properties',
-                    'RETURN collect({label: "__label__", properties:properties})'].join(' ') }
+                    'RETURN {label: "__label__", properties:properties}'].join(' ') }
                   }
 
 
@@ -46,15 +45,15 @@ class databaseService {
     }, this))
   }
 
-  static addLabelAndRelatedLabels (relatedLabels) {
+  static addRelatedNodes (relatedLabels) {
     return new Promise (_.bind((resolve, reject) => {
       relatedLabels.forEach(arrayItem => {
         let currentLabel                  = arrayItem.label
         graph[currentLabel]               = {}
-        graph[currentLabel].label         = currentLabel
         graph[currentLabel].relatedNodes  = _.flatten(arrayItem.relatedLabels)
         return resolve(graph)
       })
+
     }, this))
   }
 
@@ -66,8 +65,15 @@ class databaseService {
       for (label of labels) {
         let hrStartInt         = process.hrtime()
         let currentQuery       = _.clone(queries[queryName])
+        let queryResult        = {}
         currentQuery.statement = currentQuery.statement.replace(/__label__/g, label)
-        result.push(yield db.query([currentQuery], dbUrl))
+        try {
+          queryResult = yield db.query([currentQuery], dbUrl)
+        }
+        catch (err) {
+          reject(err)
+        }
+        result.push(queryResult)
         let hrStopInt          = process.hrtime(hrStartInt)
         console.log(`[ Intermediary ] ${label} => ${queryName} (hr): %ds %dms`, hrStopInt[0], hrStopInt[1]/1000000)
       }
@@ -76,6 +82,7 @@ class databaseService {
       return result
     }, this))
   }
+
 
   static getNodeLabels (dbUrl) {
     return db.query([queries.labelsQuery], dbUrl)
@@ -87,7 +94,7 @@ class databaseService {
         .get(dbUrl  + '/db/data/')
         .end((err, result) => {
           if (err) {
-            return reject({status: 'INTERNAL_SERVER_ERROR',response: {response: err}})
+            return reject({status: 'BAD_REQUEST',response: {response: 'dbUrl_not_valid'}})
           }
           let version = result.body.neo4j_version
           var regex = /([0-9])\.([0-9])\.([0-9])/
@@ -101,6 +108,7 @@ class databaseService {
         })
     })
   }
+
 
 }
 
