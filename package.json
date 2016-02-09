@@ -1,5 +1,5 @@
 {
-  "name": "NeoCrawl",
+  "name": "neocrawl",
   "version": "0.0.1",
   "description": "NeoCrawl is built as a microservice that mediates any listing, finding or filtering request between an api and a neo4j database. The comunication is done over rest api.",
   "author": "Silviu C. Stan [scstan]",
@@ -14,5 +14,6 @@
   "repository": {
     "type": "git",
     "url": "git@bitbucket.org:scstan/neocrawl.git"
-  }
+  },
+  "license": "MIT"
 }
