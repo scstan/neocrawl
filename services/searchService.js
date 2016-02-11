@@ -1,9 +1,9 @@
 'use strict'
 const db      = require('../neo4j_driver')
 const helpers = require('../utils').helpers
-const co      = require('co')
 const Promise = require('bluebird')
 const _       = require('lodash')
+const co      = require('co')
 
 class searchService {
 
@@ -35,17 +35,29 @@ class searchService {
           where.push('and')
         }
         if (property !== 'id') {
-          where.push('toString(' + requestedProperty + ') =~ "(?i).*' + filters[requestedProperty] + '.*"')
+          if (typeof filters[requestedProperty] === 'boolean')
+            where.push(requestedProperty + ' = ' + filters[requestedProperty])
+          else if(filters[requestedProperty].constructor === Array) {
+            where.push(requestedProperty + ' in [' + filters[requestedProperty] + ']')
+          }
+          else {
+            where.push('toString(' + requestedProperty + ') =~ "(?i).*' + filters[requestedProperty] + '.*"')
+          }
         }
         else {
-          where.push('id(' + label + ') = ' + filters[requestedProperty])
+          if(filters[requestedProperty].constructor === Array) {
+            where.push('id(' + label + ') in [' + filters[requestedProperty] + ']')
+          }
+          else {
+            where.push('id(' + label + ') = ' + filters[requestedProperty])
+          }
         }
       })
       return where
   }
 
   static buildOptionals (reqQuery, node, graph) {
-    return co(function*() {
+    return new Promise ((resolve, reject) => {
       let q = []
       q.push(node)
       let optionals = []
@@ -83,7 +95,7 @@ class searchService {
         }
         q = helpers.dequeue(q)
       }
-      return optionals.join(' ')
+      return resolve(optionals.join(' '))
     })
   }
 
@@ -117,7 +129,7 @@ class searchService {
       const dbUrl    = reqQuery.dbUrl.replace(/\/$/,'')
       let queryResults
       try {
-        queryResults = yield db.query([{statement: query}, {statement: countQuery}], dbUrl)
+        queryResults = yield db.query([{statement: query}, {statement: countQuery}], dbUrl).catch(err => {return err})
       }
       catch (err){
         return err
