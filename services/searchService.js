@@ -30,14 +30,15 @@ class searchService {
 
   static buildCurrentNodeWhere (filters, propertiesList, label, where) {
       propertiesList.forEach(function (property) {
+        const requestedProperty = label + '.' + property
         if (where.length > 1) {
           where.push('and')
         }
         if (property !== 'id') {
-          where.push('str(' + label + '.' + property + ') =~ "(?i).*' + filters[label+property] + '.*"')
+          where.push('toString(' + requestedProperty + ') =~ "(?i).*' + filters[requestedProperty] + '.*"')
         }
         else {
-          where.push('id(' + label + ') = ' + filters[label+property])
+          where.push('id(' + label + ') = ' + filters[requestedProperty])
         }
       })
       return where
@@ -61,7 +62,7 @@ class searchService {
             tree[relatedNode] = {leafOf: currentNode}
           }
         }
-        const properties = Object.keys(reqQuery.filters).map( property => { return property.replace(currentNode, '')})
+        const properties = Object.keys(reqQuery.filters).map( property => { return property.replace(currentNode+'.', '')})
         let currentNodeProperties = searchService.getNodeProperties(currentNode, graph)
         currentNodeProperties = _.intersection(currentNodeProperties, properties)
         let baseOptional = ''

@@ -3,9 +3,6 @@ const helpers         = require('../utils').helpers
 const databaseService = require('../services').databaseService
 const _               = require('lodash')
 
-
-
-
 class databaseController {
   static setup(req, res) {
     let dbAlias  = ''
