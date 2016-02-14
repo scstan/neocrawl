@@ -16,7 +16,10 @@ class DB {
       const resp = JSON.parse(result.text)
       if (resp.errors.length > 0) {return reject(resp.errors[0])}
       let rezObj = resp.results
-      rezObj = _.map(_.flatten(_.map(rezObj, 'data')), '.row[0]')
+      rezObj = _.map(_.flatten(_.map(rezObj, 'data')), data => {
+        if (data.row.length > 1) return data.row
+        else return data.row[0]
+      })
       rezObj = rezObj[1]?rezObj:rezObj[0]
       return resolve(rezObj)
     }

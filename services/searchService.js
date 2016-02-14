@@ -38,11 +38,20 @@ class searchService {
     return graph[node].relatedNodes
   }
 
+  static buildReturn (node, graph, reqQuery) {
+    if (reqQuery.return) {
+      return reqQuery.return
+    }
+    else {
+      return 'ID(' + node + ')'
+    }
+  }
+
   static transfPseudoStr(value) {
     if (value.constructor !== Array) {
       value = [value]
     }
-    value = value.map(function(item){
+    value = _.map(value, item => {
       if (item.constructor === String && item.indexOf('"') === -1){
         return '"' + item + '"'
       }
@@ -53,16 +62,21 @@ class searchService {
     return value.length === 1? value[0]:value
   }
 
-  static buildFilter (nodeProperty, filterObj) {
+  static buildFilter (label, property, filterObj) {
     const objectCheck = filterObj.constructor === Object
     const filter = objectCheck ? Object.keys(filterObj)[0] : 'eq'
     let value
+    let nodeProperty = label + '.' + property
     if (filter !== 'like' && filter !== 'regex') {
       value = objectCheck ? this.transfPseudoStr(filterObj[filter]) : this.transfPseudoStr(filterObj)
     }
     else {
       value = objectCheck ? filterObj[filter] : filterObj
     }
+    if (property === 'ID'){
+      nodeProperty =  'ID(' + label + ')'
+    }
+
     switch (filter) {
       case 'in':
         return nodeProperty + ' IN [' + value + ']'
@@ -72,36 +86,23 @@ class searchService {
         return 'ANY (x IN ' + '[' + value + ']' + ' WHERE x in ' + nodeProperty + ')'
       case 'excludes':
         return 'NOT ANY (x IN ' + '[' + value + ']' + ' WHERE x in ' + nodeProperty + ')'
-      case 'eq':
-        return nodeProperty + operatorMap.eq + value
-      case 'lt':
-        return nodeProperty + operatorMap.lt + value
-      case 'le':
-        return nodeProperty + operatorMap.le + value
-      case 'gt':
-        return nodeProperty + operatorMap.gt + value
-      case 'ge':
-        return nodeProperty + operatorMap.ge + value
-      case 'ne':
-        return nodeProperty + operatorMap.ne + value
       case 'like':
         return 'TOSTRING(' + nodeProperty + ')' + operatorMap.regex + '"(?i).*' + value + '.*"'
       case 'regex':
         return 'TOSTRING(' + nodeProperty + ')' + operatorMap.regex + '"' + value + '"'
       default:
-        throw Error('Filter not recognized: ' + filter);
+        return nodeProperty + operatorMap[filter] + value
     }
   }
 
   static buildCurrentNodeWhere (filters, propertiesList, label, where) {
     if (propertiesList.length>0) {
-      propertiesList.forEach(function (property) {
-        const requestedProperty = label + '.' + property
+      _.each(propertiesList, property => {
         if (where.length > 1) {
           where.push('and')
         }
-        where.push(this.buildFilter(requestedProperty, filters[requestedProperty]))
-      }.bind(this))
+        where.push(this.buildFilter(label, property, filters[label + '.' + property]))
+      })
       return where
     }
     else {
@@ -109,10 +110,15 @@ class searchService {
     }
   }
 
-  static buildWith (match) {
-    const regex = /\((\w+):/g
-    let result = match.match(regex)
-    return result.map(item => item.slice(1,item.length-1) ).join(', ')
+  static buildWith (currentNode, node) {
+    let qWith = ['WITH']
+    if (currentNode !== node) {
+      qWith.push([currentNode, node].join(', '))
+    }
+    else {
+      qWith.push(node)
+    }
+    return qWith
   }
 
   static buildOptionals (reqQuery, node, graph) {
@@ -126,13 +132,12 @@ class searchService {
       while (q.length > 0) {
         const currentNode = q[0]
         let relatedNodes  = this.getRelatedNodes(currentNode, graph)
-        for (let n=0, len = relatedNodes.length; n<len; n++) {
-          if (!tree.hasOwnProperty(relatedNodes[n])) {
-            let relatedNode   = relatedNodes[n]
+        _.each(relatedNodes, relatedNode =>{
+          if (!tree.hasOwnProperty(relatedNode)) {
             q.push(relatedNode)
             tree[relatedNode] = {leafOf: currentNode}
           }
-        }
+        })
         let baseOptional = ''
         const father     = tree[tree[currentNode].leafOf]
         if (father && father.initialQuery) {
@@ -144,14 +149,14 @@ class searchService {
           tree[currentNode].initialQuery = baseOptional
         }
         let where                 = ['WHERE']
-        const properties          = Object.keys(reqQuery.filters).map( property => { return property.replace(currentNode+'.','')})
+        const properties          = _.map(Object.keys(reqQuery.filters), property => {
+          return property.replace(currentNode+'.','')
+        })
         let currentNodeProperties = this.getNodeProperties(currentNode, graph)
         currentNodeProperties     = _.intersection(currentNodeProperties, properties)
         where = this.buildCurrentNodeWhere(reqQuery.filters, currentNodeProperties, currentNode, where)
         if (where.length > 1) {
-          //const qWith = ['WITH']
-          //qWith.push(this.buildWith(baseOptional))
-          const optionalQuery = [baseOptional/*, qWith.join(' ')*/, where.join(' ')]
+          const optionalQuery = [baseOptional, where.join(' '), this.buildWith(currentNode, node).join(' ')]
           optionals = optionals.concat(optionalQuery.join(' '))
         }
         q = helpers.dequeue(q)
@@ -166,8 +171,7 @@ class searchService {
       const node         = reqQuery.node
       const skip         = parseInt(reqQuery.offset) * parseInt(reqQuery.limit) - parseInt(reqQuery.limit) || 0
       const limit        = parseInt(reqQuery.limit) || 10
-      //const orderBy      = reqQuery.orderBy ? ' ORDER BY ' + node + '.' + reqQuery.orderBy + ' ' + reqQuery.direction : ''
-      const orderBy      = '' // TBD when returning full node details
+      const orderBy      = reqQuery.orderBy ? 'ORDER BY ' + node + '.' + reqQuery.orderBy + ' ' + reqQuery.direction : ''
       let builtOptionals = ''
       let basicQuery     = []
 
@@ -183,7 +187,7 @@ class searchService {
 
       basicQuery.push(builtOptionals)
       let query      = basicQuery.slice(0)
-      query.push('RETURN DISTINCT ID(' + node + ')' + orderBy + ' SKIP ' + skip + ' LIMIT ' + limit)
+      query.push(orderBy + ' RETURN DISTINCT ' + this.buildReturn(node,graph,reqQuery) + ' SKIP ' + skip + ' LIMIT ' + limit)
       query          = query.join(' ')
       let countQuery = basicQuery.slice(0)
       countQuery.push('RETURN COUNT(DISTINCT ID(' + node + '))')
