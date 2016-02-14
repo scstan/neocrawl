@@ -110,9 +110,9 @@ class searchService {
     }
   }
 
-  static buildWith (currentNode, node) {
+  static buildWith (currentNode, node, customReturn) {
     let qWith = ['WITH']
-    if (currentNode !== node) {
+    if (currentNode !== node && customReturn.indexOf(currentNode) !== -1) {
       qWith.push([currentNode, node].join(', '))
     }
     else {
@@ -156,7 +156,7 @@ class searchService {
         currentNodeProperties     = _.intersection(currentNodeProperties, properties)
         where = this.buildCurrentNodeWhere(reqQuery.filters, currentNodeProperties, currentNode, where)
         if (where.length > 1) {
-          const optionalQuery = [baseOptional, where.join(' '), this.buildWith(currentNode, node).join(' ')]
+          const optionalQuery = [baseOptional, where.join(' '), this.buildWith(currentNode, node, reqQuery.return).join(' ')]
           optionals = optionals.concat(optionalQuery.join(' '))
         }
         q = helpers.dequeue(q)
