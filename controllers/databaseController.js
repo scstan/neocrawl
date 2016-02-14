@@ -4,6 +4,7 @@ const databaseService = require('../services').databaseService
 const _               = require('lodash')
 
 class databaseController {
+
   static setup(req, res) {
     let dbAlias  = ''
     let dbUrl    = ''
@@ -22,6 +23,7 @@ class databaseController {
       .then(message       => helpers.sendResponse(message, res))
       .catch(err          => helpers.sendErr(err.status || 'INTERNAL_SERVER_ERROR', err.response || err.stack, res))
   }
+
 }
 
 module.exports = databaseController

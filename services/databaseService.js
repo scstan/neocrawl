@@ -83,7 +83,6 @@ class databaseService {
     }, this))
   }
 
-
   static getNodeLabels (dbUrl) {
     return db.query([queries.labelsQuery], dbUrl)
   }
@@ -108,7 +107,6 @@ class databaseService {
         })
     })
   }
-
 
 }
 

@@ -1,4 +1,4 @@
-'use strict'
+//'use strict'
 const config      = require('./config')
 const routes      = require('./routes')
 const express     = require('express')
