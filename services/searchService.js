@@ -82,8 +82,10 @@ class searchService {
         return nodeProperty + ' IN [' + value + ']'
       case 'out':
         return 'NOT ' + nodeProperty + ' IN [' + value + ']'
-      case 'contains':
+      case 'containsAny':
         return 'ANY (x IN ' + '[' + value + ']' + ' WHERE x in ' + nodeProperty + ')'
+      case 'containsAll':
+        return 'All (x IN ' + '[' + value + ']' + ' WHERE x in ' + nodeProperty + ')'
       case 'excludes':
         return 'NOT ANY (x IN ' + '[' + value + ']' + ' WHERE x in ' + nodeProperty + ')'
       case 'like':
@@ -95,7 +97,7 @@ class searchService {
     }
   }
 
-  static buildCurrentNodeWhere (filters, propertiesList, label, where) {
+  static buildWhere (filters, propertiesList, label, where) {
     if (propertiesList.length>0) {
       _.each(propertiesList, property => {
         if (where.length > 1) {
@@ -110,15 +112,14 @@ class searchService {
     }
   }
 
-  static buildWith (currentNode, node, customReturn) {
-    let qWith = ['WITH']
-    if (currentNode !== node && customReturn.indexOf(currentNode) !== -1) {
-      qWith.push([currentNode, node].join(', '))
+  static buildWith (currentNode, customReturn, withArr, node) {
+    if (withArr.indexOf(node) === -1) {
+      withArr.push(node)
     }
-    else {
-      qWith.push(node)
+    if (withArr.indexOf(currentNode) === -1 && customReturn && customReturn.indexOf(currentNode) !== -1) {
+      withArr.push(currentNode)
     }
-    return qWith
+    return withArr
   }
 
   static buildOptionals (reqQuery, node, graph) {
@@ -128,7 +129,7 @@ class searchService {
       let optionals = []
       let tree      = {}
       tree[node]    = {leafOf: ''}
-
+      let withArr     = []
       while (q.length > 0) {
         const currentNode = q[0]
         let relatedNodes  = this.getRelatedNodes(currentNode, graph)
@@ -152,13 +153,20 @@ class searchService {
         const properties          = _.map(Object.keys(reqQuery.filters), property => {
           return property.replace(currentNode+'.','')
         })
+
         let currentNodeProperties = this.getNodeProperties(currentNode, graph)
         currentNodeProperties     = _.intersection(currentNodeProperties, properties)
-        where = this.buildCurrentNodeWhere(reqQuery.filters, currentNodeProperties, currentNode, where)
-        if (where.length > 1) {
-          const optionalQuery = [baseOptional, where.join(' '), this.buildWith(currentNode, node, reqQuery.return).join(' ')]
+        where = this.buildWhere(reqQuery.filters, currentNodeProperties, currentNode, where)
+
+        if (where.length > 1 || (reqQuery.return && reqQuery.return.indexOf(currentNode) !== -1 && currentNode !== node)) {
+          let qWith = ['WITH']
+          withArr   = this.buildWith(currentNode, reqQuery.return, withArr, node)
+          qWith.push(withArr.slice(0).join(', '))
+          if (where.length < 1) {baseOptional = baseOptional.replace('MATCH', 'OPTIONAL MATCH')}
+          const optionalQuery = [baseOptional, where.join(' '), qWith.join(' ')]
           optionals = optionals.concat(optionalQuery.join(' '))
         }
+
         q = helpers.dequeue(q)
       }
       return resolve(optionals.join(' '))
@@ -167,6 +175,7 @@ class searchService {
 
   static search (reqQuery) {
     return co(function*() {
+      let processStart = process.hrtime()
       const graph        = yield this.getGraph(reqQuery.dbAlias)
       const node         = reqQuery.node
       const skip         = parseInt(reqQuery.offset) * parseInt(reqQuery.limit) - parseInt(reqQuery.limit) || 0
@@ -195,15 +204,21 @@ class searchService {
 
       const dbUrl    = reqQuery.dbUrl.replace(/\/$/,'')
       let queryResults
+      let queryStart         = process.hrtime()
       try {
         queryResults = yield db.query([{statement: query}, {statement: countQuery}], dbUrl)
+        let queryStop          = process.hrtime(queryStart)
+        console.log(`[ DBQuery ] => ${reqQuery.node} <= (hr): %ds %dms`, queryStop[0], queryStop[1]/1000000)
       }
       catch (err){
         return err
       }
 
+
       let result = {count: queryResults ? queryResults.pop() : 0, results: queryResults || []}
       if (reqQuery.debug) result.query = query
+      let processStop  = process.hrtime(processStart)
+      console.log(`[ Process Total ] => ${reqQuery.node} <= (hr): %ds %dms`, processStop[0], processStop[1]/1000000)
       return result
     }.bind(this))
   }
