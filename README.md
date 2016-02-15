@@ -8,9 +8,9 @@
 <h4>REQUIREMENTS</h4>
 <p>1. All neo4j database clients must have version of at least 2.2.0 for the setup part</p>
 <p>&nbsp&nbsp&nbspThe search/listing works with lower versions but it's not recommended</p>
-<p>&nbsp&nbsp&nbspI also recommend using the latest stable neo4j version</p>
+<p>&nbsp&nbsp&nbspIt is also recommended to use the latest stable neo4j version</p>
 <p>2. Node.js version of at least v4.2.1</p>
-<p>&nbsp&nbsp&nbsp In this case I also recomend using the latest stable node.js version</p>
+<p>&nbsp&nbsp&nbsp In this case it is also recommended to use the latest stable node.js version</p>
 <p>3. A unix/linux based environment for the service deployment </p>
 <br>
 <h4>DEPLOYMENT</h4>
