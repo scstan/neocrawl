@@ -8,10 +8,10 @@
 <h4>REQUIREMENTS</h4>
 <p>1. All neo4j database clients must have version of at least 2.2.0 for the setup part</p>
 <p>&nbsp&nbsp&nbspThe search/listing works with lower versions but it's not recommended</p>
-<p>&nbsp&nbsp&nbspI also reccomend using the latest stable neo4j version</p>
-<p>2. node.js version of at least v4.2.1</p>
+<p>&nbsp&nbsp&nbspI also recommend using the latest stable neo4j version</p>
+<p>2. Node.js version of at least v4.2.1</p>
 <p>&nbsp&nbsp&nbsp In this case I also recomend using the latest stable node.js version</p>
-<p>3. a unix/linux based environment for the service deployment </p>
+<p>3. A unix/linux based environment for the service deployment </p>
 <br>
 <h4>DEPLOYMENT</h4>
 <p>1. Clone the repo </p>
@@ -29,7 +29,7 @@
 <p>1. SetupDB </p>
 <p>This will generate a .json, in the graphs directory, with all the "models" in your database
 <br>Every usage of this endpoint updates the .json with your lates database mapping 
-<br>It is reccomended to use this endpoint everytime you deploy you application
+<br>It is recommended to use this endpoint everytime you deploy you application
 <br>Please note that this may take a bit depending on your database size</p>
 ``` POST {{base_url}}/api/setupdb```
 ```
