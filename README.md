@@ -49,32 +49,18 @@
 <p> Response example [the key in this returned map is the actual label of the node]</p>
 ```
 {
-  "Role": {
-    "relatedNodes": [
-      "User",
-      "_User"
-    ],
-    "properties": [
-      "description",
-      "code",
-      "id"
-    ]
-  },
+  ...
   "User": {
     "relatedNodes": [
       "Role",
       "_Role"
     ],
     "properties": [
-      "userName",
-      "lastLogout",
-      "lastLogin",
+      ...
       "password",
-      "firstName",
-      "lastName",
-      "authAttempts",
       "id",
       "email",
+      ...
     ]
   },
   ...
