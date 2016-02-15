@@ -86,8 +86,10 @@ class searchService {
         return 'ANY (x IN ' + '[' + value + ']' + ' WHERE x in ' + nodeProperty + ')'
       case 'containsAll':
         return 'All (x IN ' + '[' + value + ']' + ' WHERE x in ' + nodeProperty + ')'
-      case 'excludes':
+      case 'excludesAny':
         return 'NOT ANY (x IN ' + '[' + value + ']' + ' WHERE x in ' + nodeProperty + ')'
+      case 'excludesAll':
+        return 'NOT All (x IN ' + '[' + value + ']' + ' WHERE x in ' + nodeProperty + ')'
       case 'like':
         return 'TOSTRING(' + nodeProperty + ')' + operatorMap.regex + '"(?i).*' + value + '.*"'
       case 'regex':
