@@ -80,7 +80,7 @@
     "orderBy": "idRestaurant",         // <= [OPTIONAL]
     "direction": "asc",                // <= [OPTIONAL]
     "debug": true,                     // <= prints out the generated neo4j cypher query [OPTIONAL]
-    "filters": {                       // <= filtes list [MANDATORY]
+    "filters": {                       // <= filters list [MANDATORY but can be left empty]
         "User.email": {
             "like": "@gmail"
         },
