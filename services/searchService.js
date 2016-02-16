@@ -193,7 +193,7 @@ class searchService {
         basicQuery.push('')
       }
       else if (!builtOptionals) {
-        basicQuery.push('MATCH (' + node + ':' + node + ') ')
+        basicQuery.push('MATCH (' + node + ':' + node + ') WITH ' + node + ' ')
       }
 
       basicQuery.push(builtOptionals)
