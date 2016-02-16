@@ -5,6 +5,8 @@
 <br>This service alows you to find/list any node from within your neo4j database using related nodes properties (from any relationship distance)
 <br>It was build as light as possible and it's only purpose is to generate appropriate cypher queries based on given filters and not intens processing </h5>
 <br>
+
+``` Issues, Pull requests and Enhancement requests are very welcomed and encouraged ! :D```
 <h4>REQUIREMENTS</h4>
 <p>1. All neo4j database clients must have version of at least 2.2.0 for the setup part</p>
 <p>&nbsp&nbsp&nbspThe search/listing works with lower versions but it's not recommended</p>
