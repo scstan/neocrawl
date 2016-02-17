@@ -88,6 +88,9 @@
         },
         "User.lastName": {
             "like":"smith"
+        },
+        "User.customImage":{
+            "has": false
         }
     },
     "return":"{user:User, roles:collect(distinct(Role))}" 
@@ -117,7 +120,8 @@ ex: "User.lastName": {
 'ge': >=
 'ne': <> 
 'in': checks that the given property [array] contains the given value 
-'out': checks that the given property [array] does not contain the given value 
+'out': checks that the given property [array] does not contain the given value
+'has': checks if the given property exists on the node [boolean]
 'containsAny': checks that ANY of the elements from the value [array] is found in the given property [array]
 'containsAll': checks that ALL of the elements from the value [array] is found in the given property [array]
 'excludesAny': checks that ANY of the elements from the value [array] are not found in the given property [array]
