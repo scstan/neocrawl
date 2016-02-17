@@ -65,13 +65,10 @@ class searchService {
   static buildFilter (label, property, filterObj) {
     const objectCheck = filterObj.constructor === Object
     const filter = objectCheck ? Object.keys(filterObj)[0] : 'eq'
-    let value
+    let value = objectCheck ? filterObj[filter] : filterObj
     let nodeProperty = label + '.' + property
-    if (filter !== 'like' && filter !== 'regex') {
-      value = objectCheck ? this.transfPseudoStr(filterObj[filter]) : this.transfPseudoStr(filterObj)
-    }
-    else {
-      value = objectCheck ? filterObj[filter] : filterObj
+    if (filter !== 'like' && filter !== 'regex' && value.constructor !== Boolean) {
+      value = this.transfPseudoStr(value)
     }
     if (property === 'ID'){
       nodeProperty =  'ID(' + label + ')'
@@ -82,6 +79,8 @@ class searchService {
         return nodeProperty + ' IN [' + value + ']'
       case 'out':
         return 'NOT ' + nodeProperty + ' IN [' + value + ']'
+      case 'has':
+        return 'has(' + nodeProperty + ') = ' + value
       case 'containsAny':
         return 'ANY (x IN ' + '[' + value + ']' + ' WHERE x in ' + nodeProperty + ')'
       case 'containsAll':
