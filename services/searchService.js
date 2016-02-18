@@ -38,7 +38,7 @@ class searchService {
     return graph[node].relatedNodes
   }
 
-  static buildReturn (node, graph, reqQuery) {
+  static buildReturn (node, reqQuery) {
     if (reqQuery.return) {
       return reqQuery.return
     }
@@ -117,7 +117,12 @@ class searchService {
     if (withArr.indexOf(node) === -1) {
       withArr.push(node)
     }
-    if (withArr.indexOf(currentNode) === -1 && customReturn && customReturn.indexOf(currentNode) !== -1) {
+    const customReturnExists = customReturn && customReturn.indexOf(withArr[withArr.length-1]) === -1
+    const withArrContainsCurrentNode = withArr[withArr.length-1] !== node
+    if (withArr.length > 0 && customReturnExists && withArrContainsCurrentNode) {
+      withArr.pop()
+    }
+    if (withArr.indexOf(currentNode) === -1) {
       withArr.push(currentNode)
     }
     return withArr
@@ -130,7 +135,7 @@ class searchService {
       let optionals = []
       let tree      = {}
       tree[node]    = {leafOf: ''}
-      let withArr     = []
+      let withArr   = []
       while (q.length > 0) {
         const currentNode = q[0]
         let relatedNodes  = this.getRelatedNodes(currentNode, graph)
@@ -160,10 +165,10 @@ class searchService {
         where = this.buildWhere(reqQuery.filters, currentNodeProperties, currentNode, where)
 
         if (where.length > 1 || (reqQuery.return && reqQuery.return.indexOf(currentNode) !== -1 && currentNode !== node)) {
+          if (where.length < 1) {baseOptional = baseOptional.replace('MATCH', 'OPTIONAL MATCH')}
           let qWith = ['WITH']
           withArr   = this.buildWith(currentNode, reqQuery.return, withArr, node)
           qWith.push(withArr.slice(0).join(', '))
-          if (where.length < 1) {baseOptional = baseOptional.replace('MATCH', 'OPTIONAL MATCH')}
           const optionalQuery = [baseOptional, where.join(' '), qWith.join(' ')]
           optionals = optionals.concat(optionalQuery.join(' '))
         }
@@ -196,19 +201,20 @@ class searchService {
       }
 
       basicQuery.push(builtOptionals)
-      let query      = basicQuery.slice(0)
-      query.push(orderBy + ' RETURN DISTINCT ' + this.buildReturn(node,graph,reqQuery) + ' SKIP ' + skip + ' LIMIT ' + limit)
-      query          = query.join(' ')
-      let countQuery = basicQuery.slice(0)
-      countQuery.push('RETURN COUNT(DISTINCT ID(' + node + '))')
-      countQuery     = countQuery.join(' ')
+      let query         = basicQuery.slice(0)
+      const builtReturn = this.buildReturn(node,reqQuery)
+      query.push(orderBy + ' RETURN DISTINCT ' + builtReturn + ' SKIP ' + skip + ' LIMIT ' + limit)
+      query             = query.join(' ')
+      let countQuery    = basicQuery.slice(0)
+      countQuery.push('RETURN COUNT(DISTINCT ' + node + ')')
+      countQuery        = countQuery.join(' ')
 
-      const dbUrl    = reqQuery.dbUrl.replace(/\/$/,'')
+      const dbUrl       = reqQuery.dbUrl.replace(/\/$/,'')
       let queryResults
-      let queryStart         = process.hrtime()
+      let queryStart    = process.hrtime()
       try {
-        queryResults = yield db.query([{statement: query}, {statement: countQuery}], dbUrl)
-        let queryStop          = process.hrtime(queryStart)
+        queryResults    = yield db.query([{statement: query}, {statement: countQuery}], dbUrl)
+        let queryStop   = process.hrtime(queryStart)
         console.log(`[ DBQuery ] => ${reqQuery.node} <= (hr): %ds %dms`, queryStop[0], queryStop[1]/1000000)
       }
       catch (err){
