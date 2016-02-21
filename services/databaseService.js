@@ -20,6 +20,24 @@ let queries =  {
 
 class databaseService {
 
+  static checkGraphExists (alias, update) {
+    return new Promise ( (resolve, reject) => {
+      if(!update) {
+        try {
+          fs.accessSync(`./graphs/${alias}.json`)
+          reject({status: 'CONFLICT', response: {response: {db_alias_exists_use: 'use_update_boolean_param'}}})
+        }
+        catch (err) {
+          console.log(err)
+          if (err) return resolve(err)
+        }
+      }
+      else {
+        resolve()
+      }
+    })
+  }
+
   static writeGraphToJson (alias, graph) {
     return new Promise ((resolve, reject) => {
       try {
@@ -102,7 +120,7 @@ class databaseService {
             return resolve(version)
           }
           else {
-            return reject({status: 'BAD_REQUEST',response: {response: 'db_version_lower_than_required'}})
+            return reject({status: 'UPGRADE_REQUIRED',response: {response: 'db_version_lower_than_required'}})
           }
         })
     })

@@ -1,22 +1,15 @@
 'use strict'
-const helpers         = require('../utils').helpers
-const searchService   = require('../services').searchService
+const neocrawl = require('../neocrawl')
+const helpers  = require('../utils').helpers
 
 class search {
 
   static getGraph(req, res) {
-    helpers.keyDifference(['dbAlias'], req.body)
-      .then(()            => searchService.getGraph(req.body.dbAlias))
-      .then(message       => helpers.sendResponse(message, res))
-      .catch(err          => helpers.sendErr(err.status || 'INTERNAL_SERVER_ERROR', err.response || err.stack, res))
-
+    helpers.promiseResolver(neocrawl.getGraph(req.body), res)
   }
 
   static search (req, res) {
-    helpers.keyDifference(['dbUrl', 'dbAlias','node', 'offset', 'limit', 'filters'], req.body)
-      .then(()            => searchService.search(req.body))
-      .then(message       => helpers.sendResponse(message, res))
-      .catch(err          => helpers.sendErr(err.status || 'INTERNAL_SERVER_ERROR', err.response || err.stack, res))
+    helpers.promiseResolver(neocrawl.search(req.body), res)
   }
 }
 

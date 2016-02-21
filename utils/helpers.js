@@ -30,6 +30,12 @@ class helpers {
     return rez.reverse()
   }
 
+  static promiseResolver (promise, res) {
+    promise
+      .then(message       => helpers.sendResponse(message, res))
+      .catch(err          => helpers.sendErr(err.status || 'INTERNAL_SERVER_ERROR', err.response || err.stack, res))
+  }
+
 }
 
 module.exports= helpers
