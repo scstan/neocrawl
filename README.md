@@ -6,7 +6,9 @@
 <br>It was build as light as possible and it's only purpose is to generate appropriate cypher queries based on given filters and not intens processing </h5>
 <br>
 
-``` Issues, Pull requests and Enhancement requests are very welcomed and encouraged ! :D```
+``` 
+Issues, Pull requests and Enhancement requests are very welcomed and encouraged ! :D
+```
 <h4>REQUIREMENTS</h4>
 <p>1. All neo4j database clients must have version of at least 2.2.0 for the setup part</p>
 <p>&nbsp&nbsp&nbspThe search/listing works with lower versions but it's not recommended</p>
@@ -17,14 +19,22 @@
 <br>
 <h4>DEPLOYMENT</h4>
 <p>1. Clone the repo </p>
-``` git clone https://github.com/scstan/neocrawl.git ``` 
+``` 
+git clone https://github.com/scstan/neocrawl.git
+``` 
 <p>or</p>
-``` git clone git@github.com:scstan/neocrawl.git ```
+``` 
+git clone git@github.com:scstan/neocrawl.git
+```
 <p>2. Install all dependencies </p> 
-``` npm install ```
+``` 
+npm install
+```
 <p>3. Edit the config.json with appropriate host and port to suit your needs </p>
 <p>4. Start the service by starting either of app.js or clusters.js: </p>
-``` node app.js / node cluster.js ```
+```
+node app.js / node cluster.js
+```
 <br>
 <h4>USAGE</h4>
 <p> This service provides 3 rest api endpoints. </p>
@@ -33,7 +43,9 @@
 <br>Every usage of this endpoint updates the .json with your lates database mapping 
 <br>It is recommended to use this endpoint everytime you deploy you application
 <br>Please note that this may take a bit depending on your database size</p>
-``` POST {{base_url}}/api/setupdb```
+```
+POST {{base_url}}/api/setupdb
+```
 ```
 {
     "dbAlias": "localhost",        // <= this will be the base_name for you .json [MANDATORY]
@@ -42,7 +54,9 @@
 ```
 <p>2. Get Graph </p>
 <p> This will retrieve the generated map previously created using setupdb endpoint</p>
-``` POST {{base_url}}/api/getgraph```
+```
+POST {{base_url}}/api/getgraph
+```
 ```
 {
     "dbAlias": "localhost",        // <= this will be used to locate your mapped database [MANDATORY]
@@ -71,7 +85,9 @@
 <p>3. Search </p>
 <p> This is the main endpoint which retrieves results base on you request</p>
 
-``` POST {{base_url}}/api/search```
+```
+POST {{base_url}}/api/search
+```
 ```
 {
     "dbAlias": "localhost",            // <= this will be used to locate your mapped database [MANDATORY]
