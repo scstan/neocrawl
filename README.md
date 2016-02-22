@@ -6,8 +6,7 @@
 <br>It was build as light as possible and it's only purpose is to generate appropriate cypher queries based on given filters and not intens processing </h5>
 <br>
 
-<a href=http://scstan.github.io/neocrawl/>Complete Readme</a>
+<a href=http://scstan.github.io/neocrawl/>>>Click for complete readme<<</a>
 <br>
-<code>
-Issues, Pull requests and Enhancement requests are very welcomed and encouraged ! :D
-</code>
+<br>
+<code>Issues, Pull requests and Enhancement requests are very welcomed and encouraged ! :D</code>
