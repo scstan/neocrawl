@@ -19,9 +19,10 @@
         <h2>neocrawl is built as a microservice that mediates any listing, finding or filtering request between an api and a neo4j database. The communication is done over rest api.</h2>
 
         <section id="downloads">
+          <a href="https://github.com/scstan/neocrawl" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+          <a href="https://www.npmjs.com/package/neocrawl" class="btn btn-npm"><span class="icon"></span>View on npm</a>
           <a href="https://github.com/scstan/neocrawl/zipball/master" class="btn">Download as .zip</a>
           <a href="https://github.com/scstan/neocrawl/tarball/master" class="btn">Download as .tar.gz</a>
-          <a href="https://github.com/scstan/neocrawl" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
         </section>
       </div>
     </header>
@@ -51,13 +52,13 @@
 
 <p>1. All neo4j database clients must have version of at least 2.2.0 for the setup part</p>
 
-<p>&amp;nbsp&amp;nbsp&amp;nbspThe search/listing works with lower versions but it's not recommended</p>
+<p>The search/listing works with lower versions but it's not recommended</p>
 
-<p>&amp;nbsp&amp;nbsp&amp;nbspIt is also recommended to use the latest stable neo4j version</p>
+<p>It is also recommended to use the latest stable neo4j version</p>
 
 <p>2. Node.js version of at least v4.2.1</p>
 
-<p>&amp;nbsp&amp;nbsp&amp;nbsp In this case it is also recommended to use the latest stable node.js version</p>
+<p>In this case it is also recommended to use the latest stable node.js version</p>
 
 <p>3. A unix/linux based environment for the service deployment </p>
 
@@ -116,7 +117,7 @@
 
 <pre><code>ex:
 neocrawl
-  .setupdb(parameters) //       &lt;== the promise's parameters are exactly the requests body as stated below  
+  .setupdb(parameters) //       &lt;== the promise's parameters are exactly the requests body as stated below
   .then(result =&gt; do_stuff())
   .catch(err   =&gt; log_err())
 </code></pre>
@@ -218,7 +219,7 @@ neocrawl
     },
     "return":"{user:User, roles:collect(distinct(Role))}"
               //  &lt;= custom return must be a stringified representation. [OPTIONAL].
-}             // if custom return is not provided the search will return a list of ids   
+}             // if custom return is not provided the search will return a list of ids
               // based on the requested node type
 </code></pre>
 
@@ -265,6 +266,6 @@ neocrawl
       </section>
     </div>
 
-    
+
   </body>
 </html>
