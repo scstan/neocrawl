@@ -21,7 +21,7 @@ Issues, Pull requests and Enhancement requests are very welcomed and encouraged 
 <h3> As a node module </h3>
 <p>Using npm:</p>
 ```
-npm i --save lodash
+npm i --save neocrawl
 ```
 <p>In Node.js:</p>
 ```
@@ -54,12 +54,12 @@ node app.js / node cluster.js
 ```
 ex:
 neocrawl
-  .setupdb(parameters) //       <== the promises parameters are exactly the requests body as stated below  
+  .setupdb(parameters) //       <== the promise's parameters are exactly the requests body as stated below  
   .then(result => do_stuff())
   .catch(err   => log_err())
 ```
 <br>
-<p>Methods:/p<>
+<p>Methods:</p>
 <ul>
   <li>neocrawl.setupdb(params)</li>
   <li>neocrawl.getgraph(params)</li>
