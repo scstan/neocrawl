@@ -5,9 +5,7 @@
 <br>This service alows you to find/list any node from within your neo4j database using related nodes properties (from any relationship distance)
 <br>It was build as light as possible and it's only purpose is to generate appropriate cypher queries based on given filters and not intens processing </h5>
 <br>
-
+<h5><a href=http://scstan.github.io/neocrawl/>Complete Readme</a></h5>
 ```
 Issues, Pull requests and Enhancement requests are very welcomed and encouraged ! :D
 ```
-
-<h5><a href=http://scstan.github.io/neocrawl/>Complete Readme</a></h5>
