@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-dark.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+
+    <title>Neocrawl by scstan</title>
+  </head>
+
+  <body>
+
+    <header>
+      <div class="container">
+        <h1>Neocrawl</h1>
+        <h2>neocrawl is built as a microservice that mediates any listing, finding or filtering request between an api and a neo4j database. The communication is done over rest api.</h2>
+
+        <section id="downloads">
+          <a href="https://github.com/scstan/neocrawl/zipball/master" class="btn">Download as .zip</a>
+          <a href="https://github.com/scstan/neocrawl/tarball/master" class="btn">Download as .tar.gz</a>
+          <a href="https://github.com/scstan/neocrawl" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+        </section>
+      </div>
+    </header>
+
+    <div class="container">
+      <section id="main_content">
+        <h1>
+<a id="neocrawl" class="anchor" href="#neocrawl" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>neocrawl</h1>
+
+<p><br></p>
+
+<h4>
+<a id="description" class="anchor" href="#description" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>DESCRIPTION</h4>
+
+<h5>
+<a id="neocrawl-is-built-as-a-servicemicroservice-that-mediates-any-listing-finding-or-filtering-request-between-an-api-and-a-neo4j-database-the-communication-is-done-over-rest-apithis-service-alows-you-to-findlist-any-node-from-within-your-neo4j-database-using-related-nodes-properties-from-any-relationship-distanceit-was-build-as-light-as-possible-and-its-only-purpose-is-to-generate-appropriate-cypher-queries-based-on-given-filters-and-not-intens-processing-" class="anchor" href="#neocrawl-is-built-as-a-servicemicroservice-that-mediates-any-listing-finding-or-filtering-request-between-an-api-and-a-neo4j-database-the-communication-is-done-over-rest-apithis-service-alows-you-to-findlist-any-node-from-within-your-neo4j-database-using-related-nodes-properties-from-any-relationship-distanceit-was-build-as-light-as-possible-and-its-only-purpose-is-to-generate-appropriate-cypher-queries-based-on-given-filters-and-not-intens-processing-" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><strong>NEOCRAWL</strong> is built as a service/microservice that mediates any listing, finding or filtering request between an api and a neo4j database. The communication is done over rest api.
+<br>This service alows you to find/list any node from within your neo4j database using related nodes properties (from any relationship distance)
+<br>It was build as light as possible and it's only purpose is to generate appropriate cypher queries based on given filters and not intens processing </h5>
+
+<p><br></p>
+
+<pre><code>Issues, Pull requests and Enhancement requests are very welcomed and encouraged ! :D
+</code></pre>
+
+<h4>
+<a id="requirements" class="anchor" href="#requirements" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>REQUIREMENTS</h4>
+
+<p>1. All neo4j database clients must have version of at least 2.2.0 for the setup part</p>
+
+<p>&amp;nbsp&amp;nbsp&amp;nbspThe search/listing works with lower versions but it's not recommended</p>
+
+<p>&amp;nbsp&amp;nbsp&amp;nbspIt is also recommended to use the latest stable neo4j version</p>
+
+<p>2. Node.js version of at least v4.2.1</p>
+
+<p>&amp;nbsp&amp;nbsp&amp;nbsp In this case it is also recommended to use the latest stable node.js version</p>
+
+<p>3. A unix/linux based environment for the service deployment </p>
+
+<p><br></p>
+
+<h4>
+<a id="deployment" class="anchor" href="#deployment" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>DEPLOYMENT</h4>
+
+<h3>
+<a id="-as-a-node-module-" class="anchor" href="#-as-a-node-module-" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a> As a node module </h3>
+
+<p>Using npm:</p>
+
+<pre><code>npm i --save neocrawl
+</code></pre>
+
+<p>In Node.js:</p>
+
+<pre><code>var neocrawl = require('neocrawl');
+</code></pre>
+
+<h3>
+<a id="-as-a-microservice-" class="anchor" href="#-as-a-microservice-" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a> As a microservice </h3>
+
+<p>1. Clone the repo </p>
+
+<pre><code>git clone https://github.com/scstan/neocrawl.git
+</code></pre>
+
+<p>or</p>
+
+<pre><code>git clone git@github.com:scstan/neocrawl.git
+</code></pre>
+
+<p>2. Install all dependencies </p>
+
+<pre><code>npm install
+</code></pre>
+
+<p>3. Edit the config.json with appropriate host and port to suit your needs </p>
+
+<p>4. Start the service by starting either of app.js or clusters.js: </p>
+
+<pre><code>node app.js / node cluster.js
+</code></pre>
+
+<p><br></p>
+
+<h4>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>USAGE</h4>
+
+<h3>
+<a id="-as-a-node-module--1" class="anchor" href="#-as-a-node-module--1" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a> As a node module </h3>
+
+<p>The enlisted enpoints below are trasnformed into promised methods</p>
+
+<pre><code>ex:
+neocrawl
+  .setupdb(parameters) //       &lt;== the promise's parameters are exactly the requests body as stated below  
+  .then(result =&gt; do_stuff())
+  .catch(err   =&gt; log_err())
+</code></pre>
+
+<p><br></p>
+
+<p>Methods:</p>
+
+<ul>
+  <li>neocrawl.setupdb(params)</li>
+  <li>neocrawl.getgraph(params)</li>
+  <li>neocrawl.search(params)</li>
+</ul>
+
+<p><br></p>
+
+<h3>
+<a id="-as-a-microservice--1" class="anchor" href="#-as-a-microservice--1" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a> As a microservice </h3>
+
+<p> This service provides 3 rest api endpoints. </p>
+
+<p>1. SetupDB </p>
+
+<p>This will generate a .json, in the graphs directory, with all the "models" in your database
+<br>Every usage of this endpoint updates the .json with your lates database mapping
+<br>It is recommended to use this endpoint everytime you deploy you application
+<br>Please note that this may take a bit depending on your database size</p>
+
+<pre><code>POST {{base_url}}/api/setupdb
+</code></pre>
+
+<pre><code>{
+    "dbAlias": "localhost",        // &lt;= this will be the base_name for you .json [MANDATORY]
+    "dbUrl": "localhost:7474",     // &lt;= target neo4j database base_url or ip:port [MANDATORY]
+    "update": false                // &lt;= if you already setted up a db with the given alias neocrawl will only allow you to update it by sending this
+                                        parameter as true [OPTIONAL]
+}
+</code></pre>
+
+<p>2. Get Graph </p>
+
+<p> This will retrieve the generated map previously created using setupdb endpoint</p>
+
+<pre><code>POST {{base_url}}/api/getgraph
+</code></pre>
+
+<pre><code>{
+    "dbAlias": "localhost",        // &lt;= this will be used to locate your mapped database [MANDATORY]
+}
+</code></pre>
+
+<p> Response example [the key in this returned map is the actual label of the node]</p>
+
+<pre><code>{
+  ...
+  "User": {
+    "relatedNodes": [
+      "Role",
+      "_Role"
+    ],
+    "properties": [
+      ...
+      "password",
+      "id",
+      "email",
+      ...
+    ]
+  },
+  ...
+}
+</code></pre>
+
+<p>3. Search </p>
+
+<p> This is the main endpoint which retrieves results base on you request</p>
+
+<pre><code>POST {{base_url}}/api/search
+</code></pre>
+
+<pre><code>{
+    "dbAlias": "localhost",            // &lt;= this will be used to locate your mapped database [MANDATORY]
+    "node": "User",                    // &lt;= requested node label [MANDATORY]
+    "dbUrl": "http://localhost:7474/", // &lt;= target db [MANDATORY]
+    "offset": 1,                       // &lt;= first page aka skip 0 [MANDATORY]
+    "limit": 10,                       // &lt;= self explanatory [MANDATORY]
+    "orderBy": "idRestaurant",         // &lt;= [OPTIONAL]
+    "direction": "asc",                // &lt;= [OPTIONAL]
+    "debug": true,                     // &lt;= prints out the generated neo4j cypher query [OPTIONAL]
+    "filters": {                       // &lt;= filters list [MANDATORY but can be left empty]
+        "User.email": {
+            "like": "@gmail"
+        },
+        "User.lastName": {
+            "like":"smith"
+        },
+        "User.customImage":{
+            "has": false
+        }
+    },
+    "return":"{user:User, roles:collect(distinct(Role))}"
+              //  &lt;= custom return must be a stringified representation. [OPTIONAL].
+}             // if custom return is not provided the search will return a list of ids   
+              // based on the requested node type
+</code></pre>
+
+<h3>
+<a id="filters-" class="anchor" href="#filters-" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>FILTERS </h3>
+
+<p>The filter key is composed in the following manner LABEL.PROPERTY_NAME</p>
+
+<p>Filters can be provided either by direct assignment</p>
+
+<pre><code>"User.email": "eric@gmail.com"    // &lt;= this defaults to the eq operator
+</code></pre>
+
+<p>Or by picking an operator from the bellow list:</p>
+
+<pre><code>ex: "User.lastName": {
+            "like":"smith"
+        }
+</code></pre>
+
+<pre><code>'eq': =
+'lt': &lt;
+'le': &lt;=
+'gt': &gt;
+'ge': &gt;=
+'ne': &lt;&gt;
+'in': checks that the given property [array] contains the given value
+'out': checks that the given property [array] does not contain the given value
+'has': checks if the given property exists on the node [boolean]
+'containsAny': checks that ANY of the elements from the value [array] is found in the given property [array]
+'containsAll': checks that ALL of the elements from the value [array] is found in the given property [array]
+'excludesAny': checks that ANY of the elements from the value [array] are not found in the given property [array]
+'excludesAll': checks that ALL of the elements from the value [array] are not found in the given property [array]
+'like': checks that property fully or partially contains the given value [number or string | case insensitive]
+'regex': checks the given regex against the given property
+</code></pre>
+
+<p></p><h4>
+<a id="-issues-pull-requests-and-enhancement-requests-are-very-welcomed-and-encouraged--d" class="anchor" href="#-issues-pull-requests-and-enhancement-requests-are-very-welcomed-and-encouraged--d" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a> Issues, Pull requests and Enhancement requests are very welcomed and encouraged ! :D<h4>
+<a id="" class="anchor" href="#" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>
+
+</h4>
+</h4><p>The End</p>
+      </section>
+    </div>
+
+    
+  </body>
+</html>
