@@ -6,7 +6,7 @@
 <br>It was build as light as possible and it's only purpose is to generate appropriate cypher queries based on given filters and not intens processing </h5>
 <br>
 
-``` 
+```
 Issues, Pull requests and Enhancement requests are very welcomed and encouraged ! :D
 ```
 <h4>REQUIREMENTS</h4>
@@ -18,16 +18,27 @@ Issues, Pull requests and Enhancement requests are very welcomed and encouraged 
 <p>3. A unix/linux based environment for the service deployment </p>
 <br>
 <h4>DEPLOYMENT</h4>
+<h3> As a node module </h3>
+<p>Using npm:</p>
+```
+npm i --save lodash
+```
+<p>In Node.js:</p>
+```
+var neocrawl = require('neocrawl');
+```
+
+<h3> As a microservice </h3>
 <p>1. Clone the repo </p>
-``` 
+```
 git clone https://github.com/scstan/neocrawl.git
-``` 
+```
 <p>or</p>
-``` 
+```
 git clone git@github.com:scstan/neocrawl.git
 ```
-<p>2. Install all dependencies </p> 
-``` 
+<p>2. Install all dependencies </p>
+```
 npm install
 ```
 <p>3. Edit the config.json with appropriate host and port to suit your needs </p>
@@ -37,10 +48,29 @@ node app.js / node cluster.js
 ```
 <br>
 <h4>USAGE</h4>
+<h3> As a node module </h3>
+
+<p>The enlisted enpoints below are trasnformed into promised methods</p>
+```
+ex:
+neocrawl
+  .setupdb(parameters) //       <== the promises parameters are exactly the requests body as stated below  
+  .then(result => do_stuff())
+  .catch(err   => log_err())
+```
+<br>
+<p>Methods:/p<>
+<ul>
+  <li>neocrawl.setupdb(params)</li>
+  <li>neocrawl.getgraph(params)</li>
+  <li>neocrawl.search(params)</li>
+</ul>
+<br>
+<h3> As a microservice </h3>
 <p> This service provides 3 rest api endpoints. </p>
 <p>1. SetupDB </p>
 <p>This will generate a .json, in the graphs directory, with all the "models" in your database
-<br>Every usage of this endpoint updates the .json with your lates database mapping 
+<br>Every usage of this endpoint updates the .json with your lates database mapping
 <br>It is recommended to use this endpoint everytime you deploy you application
 <br>Please note that this may take a bit depending on your database size</p>
 ```
@@ -49,7 +79,9 @@ POST {{base_url}}/api/setupdb
 ```
 {
     "dbAlias": "localhost",        // <= this will be the base_name for you .json [MANDATORY]
-    "dbUrl": "localhost:7474"      // <= target neo4j database base_url or ip:port [MANDATORY]
+    "dbUrl": "localhost:7474",     // <= target neo4j database base_url or ip:port [MANDATORY]
+    "update": false                // <= if you already setted up a db with the given alias neocrawl will only allow you to update it by sending this
+                                        parameter as true [OPTIONAL]
 }
 ```
 <p>2. Get Graph </p>
@@ -109,8 +141,8 @@ POST {{base_url}}/api/search
             "has": false
         }
     },
-    "return":"{user:User, roles:collect(distinct(Role))}" 
-              //  <= custom return must be a stringified representation. [OPTIONAL]. 
+    "return":"{user:User, roles:collect(distinct(Role))}"
+              //  <= custom return must be a stringified representation. [OPTIONAL].
 }             // if custom return is not provided the search will return a list of ids   
               // based on the requested node type
 ```
@@ -129,13 +161,13 @@ ex: "User.lastName": {
         }
 ```
 ```
-'eq': = 
-'lt': < 
+'eq': =
+'lt': <
 'le': <=
 'gt': >
 'ge': >=
-'ne': <> 
-'in': checks that the given property [array] contains the given value 
+'ne': <>
+'in': checks that the given property [array] contains the given value
 'out': checks that the given property [array] does not contain the given value
 'has': checks if the given property exists on the node [boolean]
 'containsAny': checks that ANY of the elements from the value [array] is found in the given property [array]

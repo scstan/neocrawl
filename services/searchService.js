@@ -128,7 +128,7 @@ class searchService {
     return withArr
   }
 
-  static buildOptionals (reqQuery, node, graph) {
+  static buildSearchQuery (reqQuery, node, graph) {
     return new Promise ((resolve, reject) => {
       let q         = []
       q.push(node)
@@ -187,20 +187,20 @@ class searchService {
       const skip         = parseInt(reqQuery.offset) * parseInt(reqQuery.limit) - parseInt(reqQuery.limit) || 0
       const limit        = parseInt(reqQuery.limit) || 10
       const orderBy      = reqQuery.orderBy ? 'ORDER BY ' + node + '.' + reqQuery.orderBy + ' ' + reqQuery.direction : ''
-      let builtOptionals = ''
+      let builtSearchQuery = ''
       let basicQuery     = []
 
       if (Object.keys(reqQuery).length > 5 && !_.isEmpty(reqQuery.filters)) {
-        builtOptionals = yield this.buildOptionals(reqQuery, node, graph)
+        builtSearchQuery = yield this.buildSearchQuery(reqQuery, node, graph)
       }
-      if (builtOptionals) {
+      if (builtSearchQuery) {
         basicQuery.push('')
       }
-      else if (!builtOptionals) {
+      else if (!builtSearchQuery) {
         basicQuery.push('MATCH (' + node + ':' + node + ') WITH ' + node + ' ')
       }
 
-      basicQuery.push(builtOptionals)
+      basicQuery.push(builtSearchQuery)
       let query         = basicQuery.slice(0)
       const builtReturn = this.buildReturn(node,reqQuery)
       query.push(orderBy + ' RETURN DISTINCT ' + builtReturn + ' SKIP ' + skip + ' LIMIT ' + limit)

@@ -7,7 +7,7 @@ const _               = require('lodash')
 
 class neocrawl {
 
-  static setup (details) {
+  static setupdb (details) {
     let dbAlias  = ''
     let dbUrl    = ''
     return helpers.keyDifference(['dbAlias','dbUrl'], details)
