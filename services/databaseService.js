@@ -1,10 +1,11 @@
 'use strict'
 const db      = require('../neo4j_driver')
-const Promise = require('bluebird')
 const request = require('superagent')
+const Promise = require('bluebird')
 const co      = require('co')
 const _       = require('lodash')
 const fs      = require('fs')
+const path    = require('path')
 
 let graph   = {}
 let queries =  {
@@ -17,14 +18,13 @@ let queries =  {
                     'RETURN {label: "__label__", properties:properties}'].join(' ') }
                   }
 
-
 class databaseService {
 
   static checkGraphExists (alias, update) {
     return new Promise ( (resolve, reject) => {
       if(!update) {
         try {
-          fs.accessSync(`./graphs/${alias}.json`)
+          fs.accessSync(path.join(__dirname,'..','graphs', `${alias}.json`))
           reject({status: 'CONFLICT', response: {response: {db_alias_exists_use: 'use_update_boolean_param'}}})
         }
         catch (err) {
@@ -40,7 +40,7 @@ class databaseService {
   static writeGraphToJson (alias, graph) {
     return new Promise ((resolve, reject) => {
       try {
-        let json = fs.createWriteStream(`./graphs/${alias}.json`)
+        let json = fs.createWriteStream(path.join(__dirname,'..','graphs', `${alias}.json`))
         json.end(JSON.stringify(graph))
       }
       catch (err) {

@@ -4,6 +4,7 @@ const helpers = require('../utils').helpers
 const Promise = require('bluebird')
 const _       = require('lodash')
 const co      = require('co')
+const path    = require('path')
 
 const operatorMap = {
   'regex': ' =~ ',
@@ -21,7 +22,7 @@ class searchService {
     return new Promise ((resolve, reject) => {
       let graph = {}
       try {
-        graph = require('../graphs/' + dbAlias + '.json')
+        graph = require(path.join(__dirname, '..', 'graphs', `${dbAlias}.json`))
         return resolve(graph)
       }
       catch (err) {
