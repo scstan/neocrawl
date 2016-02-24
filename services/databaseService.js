@@ -28,7 +28,6 @@ class databaseService {
           reject({status: 'CONFLICT', response: {response: {db_alias_exists_use: 'use_update_boolean_param'}}})
         }
         catch (err) {
-          console.log(err)
           if (err) return resolve(err)
         }
       }
