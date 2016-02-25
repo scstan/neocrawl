@@ -53,11 +53,11 @@ class searchService {
       value = [value]
     }
     value = _.map(value, item => {
-      if (item.constructor === String && item.indexOf('"') === -1){
+      if (isNaN(parseInt(item)) && item.indexOf('"') === -1){
         return '"' + item + '"'
       }
       else{
-        return item
+        return parseInt(item)
       }
     })
     return value.length === 1? value[0]:value
