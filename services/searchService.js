@@ -71,7 +71,7 @@ class searchService {
     if (filter !== 'like' && filter !== 'regex' && value.constructor !== Boolean) {
       value = this.transfPseudoStr(value)
     }
-    if (property === 'ID'){
+    if (property.toLowerCase() === 'id'){
       nodeProperty =  'ID(' + label + ')'
     }
 

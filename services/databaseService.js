@@ -11,10 +11,11 @@ let graph   = {}
 let queries =  {
   labelsQuery: { 'statement': 'MATCH (node) RETURN collect(distinct(labels(node)))' },
   relationsQuery: { 'statement': ['MATCH (node:__label__)-[]-(relationedNode)',
-                   'WITH collect(distinct(labels(relationedNode))) as relatedLabel',
-                   'RETURN {label: "__label__", relatedLabels:relatedLabel}'].join(' ') },
+                   'WITH collect(distinct(labels(relationedNode))) as related',
+                   'RETURN {label: "__label__", relatedLabels:related}'].join(' ') },
   propertiesQuery: { 'statement': ['MATCH (node:__label__)',
-                    'WITH collect(distinct(keys(node))) as properties',
+                    'WITH keys(node) as props UNWIND props AS prop',
+                    'WITH collect(distinct(prop)) AS properties',
                     'RETURN {label: "__label__", properties:properties}'].join(' ') }
                   }
 
@@ -53,10 +54,8 @@ class databaseService {
   static addProperties (properties) {
     return new Promise (_.bind((resolve, reject) => {
       properties.forEach(arrayItem => {
-        let currentLabel               = arrayItem.label
-        let properties                 = _.flatten(arrayItem.properties)
         properties.push('id')
-        graph[currentLabel].properties = _.uniq(properties)
+        graph[arrayItem.label].properties = arrayItem.properties
         return resolve(graph)
       })
     }, this))
@@ -65,9 +64,8 @@ class databaseService {
   static addRelatedNodes (relatedLabels) {
     return new Promise (_.bind((resolve, reject) => {
       relatedLabels.forEach(arrayItem => {
-        let currentLabel                  = arrayItem.label
-        graph[currentLabel]               = {}
-        graph[currentLabel].relatedNodes  = _.flatten(arrayItem.relatedLabels)
+        graph[arrayItem.label]               = {}
+        graph[arrayItem.label].relatedNodes  = _.flatten(arrayItem.relatedLabels)
         return resolve(graph)
       })
 
@@ -88,7 +86,7 @@ class databaseService {
           queryResult = yield db.query([currentQuery], dbUrl)
         }
         catch (err) {
-          reject(err)
+          throw new Error(JSON.stringify(err))
         }
         result.push(queryResult)
         let hrStopInt          = process.hrtime(hrStartInt)
