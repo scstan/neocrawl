@@ -165,8 +165,11 @@ class searchService {
         currentNodeProperties     = _.intersection(currentNodeProperties, properties)
         where = this.buildWhere(reqQuery.filters, currentNodeProperties, currentNode, where)
 
-        if (where.length > 1 || (reqQuery.return && reqQuery.return.indexOf(currentNode) !== -1 && currentNode !== node)) {
-          if (where.length < 1) {baseOptional = baseOptional.replace('MATCH', 'OPTIONAL MATCH')}
+        const additionalNodeCondition = reqQuery.return && reqQuery.return.indexOf(currentNode) !== -1
+        const whereLengthCondition    = where.length > 1
+
+        if (whereLengthCondition || additionalNodeCondition) {
+          if (additionalNodeCondition) baseOptional = baseOptional.replace('MATCH', 'OPTIONAL MATCH')
           let qWith = ['WITH']
           withArr   = this.buildWith(currentNode, reqQuery.return, withArr, node)
           qWith.push(withArr.slice(0).join(', '))
@@ -188,18 +191,9 @@ class searchService {
       const skip         = parseInt(reqQuery.offset) * parseInt(reqQuery.limit) - parseInt(reqQuery.limit) || 0
       const limit        = parseInt(reqQuery.limit) || 10
       const orderBy      = reqQuery.orderBy ? 'ORDER BY ' + node + '.' + reqQuery.orderBy + ' ' + reqQuery.direction : ''
-      let builtSearchQuery = ''
       let basicQuery     = []
 
-      if (Object.keys(reqQuery).length > 5 && !_.isEmpty(reqQuery.filters)) {
-        builtSearchQuery = yield this.buildSearchQuery(reqQuery, node, graph)
-      }
-      if (builtSearchQuery) {
-        basicQuery.push('')
-      }
-      else if (!builtSearchQuery) {
-        basicQuery.push('MATCH (' + node + ':' + node + ') WITH ' + node + ' ')
-      }
+      const builtSearchQuery = yield this.buildSearchQuery(reqQuery, node, graph)
 
       basicQuery.push(builtSearchQuery)
       let query         = basicQuery.slice(0)
