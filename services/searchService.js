@@ -212,7 +212,7 @@ class searchService {
       try {
         queryResults    = yield db.query([{statement: query}, {statement: countQuery}], dbUrl)
         let queryStop   = process.hrtime(queryStart)
-        console.log(`[ DBQuery ] => ${reqQuery.node} <= (hr): %ds %dms`, queryStop[0], queryStop[1]/1000000)
+        if (!!reqQuery.debug) console.log(`[ DBQuery ] => ${reqQuery.node} <= (hr): %ds %dms`, queryStop[0], queryStop[1]/1000000)
       }
       catch (err){
         return err
@@ -222,7 +222,7 @@ class searchService {
       let result = {count: queryResults ? queryResults.pop() : 0, results: queryResults || []}
       if (reqQuery.debug) result.query = query
       let processStop  = process.hrtime(processStart)
-      console.log(`[ Process Total ] => ${reqQuery.node} <= (hr): %ds %dms`, processStop[0], processStop[1]/1000000)
+      if (!!reqQuery.debug) console.log(`[ Process Total ] => ${reqQuery.node} <= (hr): %ds %dms`, processStop[0], processStop[1]/1000000)
       return result
     }.bind(this))
   }
