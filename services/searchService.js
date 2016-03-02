@@ -165,7 +165,7 @@ class searchService {
         currentNodeProperties     = _.intersection(currentNodeProperties, properties)
         where = this.buildWhere(reqQuery.filters, currentNodeProperties, currentNode, where)
 
-        const nodeNotInReturn         = reqQuery.return.indexOf(currentNode) !== -1
+        const nodeNotInReturn         = reqQuery.return && reqQuery.return.indexOf(currentNode) !== -1
         const nodeNotInFilters        = JSON.stringify(reqQuery.filters).indexOf(currentNode) !== -1
         const additionalNodeCondition = reqQuery.return &&  nodeNotInReturn && nodeNotInFilters
         const whereLengthCondition    = where.length > 1
