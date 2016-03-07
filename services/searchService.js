@@ -167,7 +167,7 @@ class searchService {
 
         const nodeInReturn            = reqQuery.return && reqQuery.return.indexOf(currentNode) !== -1
         const nodeInFilters           = JSON.stringify(reqQuery.filters).indexOf(currentNode) !== -1
-        const nodeInOrderBy           = reqQuery.orderBy.indexOf(`${currentNode}.`) !== -1
+        const nodeInOrderBy           = reqQuery.orderBy?reqQuery.orderBy.indexOf(`${currentNode}.`) !== -1:''
         const additionalNodeCondition = (nodeInReturn && nodeInFilters) || nodeInOrderBy
         const whereLengthCondition    = where.length > 1
 
@@ -193,7 +193,7 @@ class searchService {
       const node         = reqQuery.node
       const skip         = parseInt(reqQuery.offset) * parseInt(reqQuery.limit) - parseInt(reqQuery.limit) || 0
       const limit        = parseInt(reqQuery.limit) || 10
-      reqQuery.orderBy   = reqQuery.orderBy.indexOf('.') !== -1 ? reqQuery.orderBy : node + '.' + reqQuery.orderBy
+      reqQuery.orderBy   = (reqQuery.orderBy && reqQuery.orderBy.indexOf('.')) !== -1 ? reqQuery.orderBy : node + '.' + reqQuery.orderBy
       const orderBy      = reqQuery.orderBy ? 'ORDER BY ' + reqQuery.orderBy + ' ' + reqQuery.direction : ''
       let basicQuery     = []
 
