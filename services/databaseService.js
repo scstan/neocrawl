@@ -1,11 +1,12 @@
 'use strict'
-const db      = require('../neo4j_driver')
-const request = require('superagent')
-const Promise = require('bluebird')
-const co      = require('co')
-const _       = require('lodash')
-const fs      = require('fs')
-const path    = require('path')
+const db            = require('../neo4j_driver')
+const request       = require('superagent')
+const Promise       = require('bluebird')
+const co            = require('co')
+const _             = require('lodash')
+const fs            = require('fs')
+const path          = require('path')
+const NeoCrawlError = require('../utils/NeoCrawlError')
 
 let graph   = {}
 let queries =  {
@@ -23,10 +24,10 @@ class databaseService {
 
   static checkGraphExists (alias, update) {
     return new Promise ( (resolve, reject) => {
-      if(!update) {
+      if(!update || update === false) {
         try {
           fs.accessSync(path.join(__dirname,'..','graphs', `${alias}.json`))
-          reject({status: 'CONFLICT', response: {response: {db_alias_exists_use: 'use_update_boolean_param'}}})
+          reject(new NeoCrawlError({status: 'CONFLICT', response: {response: {db_alias_exists: 'use_update_boolean_param'}}}))
         }
         catch (err) {
           if (err) return resolve(err)
@@ -89,10 +90,10 @@ class databaseService {
           throw new Error(JSON.stringify(err))
         }
         result.push(queryResult)
-        let hrStopInt          = process.hrtime(hrStartInt)
+        let hrStopInt = process.hrtime(hrStartInt)
         console.log(`[ Intermediary ] ${label} => ${queryName} (hr): %ds %dms`, hrStopInt[0], hrStopInt[1]/1000000)
       }
-      let hrStopFin  = process.hrtime(hrStartFin)
+      let hrStopFin = process.hrtime(hrStartFin)
       console.log(`[ Total ] ${queryName} (hr): %ds %dms`, hrStopFin[0], hrStopFin[1]/1000000)
       return result
     }, this))
@@ -108,7 +109,7 @@ class databaseService {
         .get(dbUrl  + '/db/data/')
         .end((err, result) => {
           if (err) {
-            return reject({status: 'BAD_REQUEST',response: {response: 'dbUrl_not_valid'}})
+            return reject(new NeoCrawlError({status: 'BAD_REQUEST',response: {response: 'dbUrl_not_valid'}}))
           }
           let version = result.body.neo4j_version
           var regex = /([0-9])\.([0-9])\.([0-9])/
@@ -117,7 +118,7 @@ class databaseService {
             return resolve(version)
           }
           else {
-            return reject({status: 'UPGRADE_REQUIRED',response: {response: 'db_version_lower_than_required'}})
+            return reject(new NeoCrawlError({status: 'UPGRADE_REQUIRED',response: {response: 'db_version_lower_than_required'}}))
           }
         })
     })
