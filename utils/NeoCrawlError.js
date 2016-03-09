@@ -7,7 +7,7 @@ class NeoCrawlError extends Error {
         const keys = Object.getOwnPropertyNames(data);
 
         keys.forEach((key) => {
-            this[key] = data;
+            this[key] = data[key];
         });
     }
 }
