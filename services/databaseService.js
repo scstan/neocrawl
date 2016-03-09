@@ -6,6 +6,7 @@ const co      = require('co')
 const _       = require('lodash')
 const fs      = require('fs')
 const path    = require('path')
+const NeoCrawlError = require('../utils/NeoCrawlError')
 
 let graph   = {}
 let queries =  {
@@ -26,7 +27,7 @@ class databaseService {
       if(!update) {
         try {
           fs.accessSync(path.join(__dirname,'..','graphs', `${alias}.json`))
-          reject({status: 'CONFLICT', response: {response: {db_alias_exists_use: 'use_update_boolean_param'}}})
+          reject(new NeoCrawlError({status: 'CONFLICT', response: {response: {db_alias_exists_use: 'use_update_boolean_param'}}}))
         }
         catch (err) {
           if (err) return resolve(err)
@@ -108,7 +109,7 @@ class databaseService {
         .get(dbUrl  + '/db/data/')
         .end((err, result) => {
           if (err) {
-            return reject({status: 'BAD_REQUEST',response: {response: 'dbUrl_not_valid'}})
+            return reject(new NeoCrawlError({status: 'BAD_REQUEST',response: {response: 'dbUrl_not_valid'}}))
           }
           let version = result.body.neo4j_version
           var regex = /([0-9])\.([0-9])\.([0-9])/
@@ -117,7 +118,7 @@ class databaseService {
             return resolve(version)
           }
           else {
-            return reject({status: 'UPGRADE_REQUIRED',response: {response: 'db_version_lower_than_required'}})
+            return reject(new NeoCrawlError({status: 'UPGRADE_REQUIRED',response: {response: 'db_version_lower_than_required'}}))
           }
         })
     })
