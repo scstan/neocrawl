@@ -4,9 +4,11 @@ class NeoCrawlError extends Error {
 
     constructor(data) {
         super();
-        for (key of data) {
+        const keys = Object.getOwnPropertyNames(data);
+
+        keys.forEach((key) => {
             this[key] = data;
-        }
+        });
     }
 }
 
