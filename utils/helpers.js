@@ -36,6 +36,15 @@ class helpers {
       .catch(err          => helpers.sendErr(err.status || 'INTERNAL_SERVER_ERROR', err.response || err.stack, res))
   }
 
+  static isJson (str) {
+    try {
+        JSON.parse(str);
+    } catch (e) {
+        return false;
+    }
+    return true;
+  }
+
 }
 
 module.exports= helpers

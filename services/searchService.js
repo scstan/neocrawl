@@ -161,17 +161,14 @@ class searchService {
           return property.replace(currentNode+'.','')
         })
 
-        let currentNodeProperties = this.getNodeProperties(currentNode, graph)
-        currentNodeProperties     = _.intersection(currentNodeProperties, properties)
-        where = this.buildWhere(reqQuery.filters, currentNodeProperties, currentNode, where)
-
-        const nodeInReturn            = reqQuery.return && reqQuery.return.indexOf(currentNode) !== -1
-        const nodeInFilters           = JSON.stringify(reqQuery.filters).indexOf(currentNode) !== -1
-        const nodeInOrderBy           = reqQuery.orderBy?reqQuery.orderBy.indexOf(`${currentNode}.`) !== -1:''
-        const additionalNodeCondition = (nodeInReturn && nodeInFilters) || nodeInOrderBy
-        const whereLengthCondition    = where.length > 1
-
-        if (whereLengthCondition || additionalNodeCondition) {
+        let currentNodeProperties     = this.getNodeProperties(currentNode, graph)
+        currentNodeProperties         = _.intersection(currentNodeProperties, properties)
+        where                         = this.buildWhere(reqQuery.filters, currentNodeProperties, currentNode, where)
+        const nodeNotInFilters        = JSON.stringify(reqQuery.filters).indexOf(currentNode+'.') === -1
+        const nodeNotRequested        = reqQuery.node !== currentNode
+        const nodeInReturn            = reqQuery.return.indexOf('{') !== -1?reqQuery.return.indexOf(currentNode+'.') !== -1:reqQuery.return.indexOf(currentNode) !== -1
+        const additionalNodeCondition = reqQuery.return && nodeInReturn && nodeNotInFilters && nodeNotRequested
+        if (where.length > 1 || additionalNodeCondition) {
           if (additionalNodeCondition) baseOptional = baseOptional.replace('MATCH', 'OPTIONAL MATCH')
           let qWith = ['WITH']
           withArr   = this.buildWith(currentNode, reqQuery.return, withArr, node)
@@ -193,11 +190,13 @@ class searchService {
       const node         = reqQuery.node
       const skip         = parseInt(reqQuery.offset) * parseInt(reqQuery.limit) - parseInt(reqQuery.limit) || 0
       const limit        = parseInt(reqQuery.limit) || 10
-      reqQuery.orderBy   = (reqQuery.orderBy && reqQuery.orderBy.indexOf('.')) !== -1 ? reqQuery.orderBy : node + '.' + reqQuery.orderBy
-      const orderBy      = reqQuery.orderBy ? 'ORDER BY ' + reqQuery.orderBy + ' ' + reqQuery.direction : ''
+      const orderBy      = reqQuery.orderBy ? 'ORDER BY ' + node + '.' + reqQuery.orderBy + ' ' + reqQuery.direction : ''
+      let builtSearchQuery = ''
       let basicQuery     = []
 
-      const builtSearchQuery = yield this.buildSearchQuery(reqQuery, node, graph)
+      if (Object.keys(reqQuery).length > 5 && !_.isEmpty(reqQuery.filters)) {
+        builtSearchQuery = yield this.buildSearchQuery(reqQuery, node, graph)
+      }
 
       basicQuery.push(builtSearchQuery)
       let query         = basicQuery.slice(0)
@@ -214,7 +213,7 @@ class searchService {
       try {
         queryResults    = yield db.query([{statement: query}, {statement: countQuery}], dbUrl)
         let queryStop   = process.hrtime(queryStart)
-        if (!!reqQuery.debug) console.log(`[ DBQuery ] => ${reqQuery.node} <= (hr): %ds %dms`, queryStop[0], queryStop[1]/1000000)
+        console.log(`[ DBQuery ] => ${reqQuery.node} <= (hr): %ds %dms`, queryStop[0], queryStop[1]/1000000)
       }
       catch (err){
         return err
@@ -224,7 +223,7 @@ class searchService {
       let result = {count: queryResults ? queryResults.pop() : 0, results: queryResults || []}
       if (reqQuery.debug) result.query = query
       let processStop  = process.hrtime(processStart)
-      if (!!reqQuery.debug) console.log(`[ Process Total ] => ${reqQuery.node} <= (hr): %ds %dms`, processStop[0], processStop[1]/1000000)
+      console.log(`[ Process Total ] => ${reqQuery.node} <= (hr): %ds %dms`, processStop[0], processStop[1]/1000000)
       return result
     }.bind(this))
   }
