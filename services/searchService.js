@@ -199,6 +199,10 @@ class searchService {
       }
 
       basicQuery.push(builtSearchQuery)
+      console.log(builtSearchQuery)
+      if (builtSearchQuery === '') {
+        basicQuery.push('MATCH (' + node + ':' + node + ') WITH ' + node + ' ')
+      }
       let query         = basicQuery.slice(0)
       const builtReturn = this.buildReturn(node,reqQuery)
       query.push(orderBy + ' RETURN DISTINCT ' + builtReturn + ' SKIP ' + skip + ' LIMIT ' + limit)
