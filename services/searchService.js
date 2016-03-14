@@ -199,7 +199,6 @@ class searchService {
       }
 
       basicQuery.push(builtSearchQuery)
-      console.log(builtSearchQuery)
       if (builtSearchQuery === '') {
         basicQuery.push('MATCH (' + node + ':' + node + ') WITH ' + node + ' ')
       }
