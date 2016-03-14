@@ -166,8 +166,12 @@ class searchService {
         where                         = this.buildWhere(reqQuery.filters, currentNodeProperties, currentNode, where)
         const nodeNotInFilters        = JSON.stringify(reqQuery.filters).indexOf(currentNode+'.') === -1
         const nodeNotRequested        = reqQuery.node !== currentNode
-        const nodeInReturn            = reqQuery.return.indexOf('{') !== -1?reqQuery.return.indexOf(currentNode+'.') !== -1:reqQuery.return.indexOf(currentNode) !== -1
-        const additionalNodeCondition = reqQuery.return && nodeInReturn && nodeNotInFilters && nodeNotRequested
+        let nodeInReturn            = false
+        if (reqQuery.return) {
+          nodeInReturn = reqQuery.return.indexOf('{') !== -1 ? reqQuery.return.indexOf(currentNode + '.') !== -1 : reqQuery.return.indexOf(currentNode) !== -1
+        }
+        else nodeInReturn = false
+        const additionalNodeCondition = nodeInReturn && nodeNotInFilters && nodeNotRequested
         if (where.length > 1 || additionalNodeCondition) {
           if (additionalNodeCondition) baseOptional = baseOptional.replace('MATCH', 'OPTIONAL MATCH')
           let qWith = ['WITH']
