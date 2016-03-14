@@ -223,7 +223,7 @@ class searchService {
       }
 
 
-      let result = {count: queryResults ? queryResults.pop() : 0, results: queryResults || []}
+      let result = {count: queryResults.constructor === Array ? queryResults.pop() : 0, results: queryResults || []}
       if (reqQuery.debug) result.query = query
       let processStop  = process.hrtime(processStart)
       console.log(`[ Process Total ] => ${reqQuery.node} <= (hr): %ds %dms`, processStop[0], processStop[1]/1000000)
