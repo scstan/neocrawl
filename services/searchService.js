@@ -76,6 +76,8 @@ class searchService {
     }
 
     switch (filter) {
+      case 'between':
+        return nodeProperty + operatorMap['ge'] + value[0] + ' and ' + nodeProperty + operatorMap['le'] + value[1]
       case 'in':
         return nodeProperty + ' IN [' + value + ']'
       case 'out':
@@ -168,8 +170,7 @@ class searchService {
         const nodeNotRequested        = reqQuery.node !== currentNode
         let nodeInReturn            = false
         if (reqQuery.return) {
-          const b = /\b/
-          const regex = new RegExp(b.source + currentNode + b.source)
+          const regex = new RegExp(`\\b${currentNode}\\b`)
           nodeInReturn = regex.test(reqQuery.return)
         }
         else nodeInReturn = false
