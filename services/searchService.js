@@ -168,7 +168,9 @@ class searchService {
         const nodeNotRequested        = reqQuery.node !== currentNode
         let nodeInReturn            = false
         if (reqQuery.return) {
-          nodeInReturn = reqQuery.return.indexOf('{') !== -1 ? reqQuery.return.indexOf(currentNode + '.') !== -1 : reqQuery.return.indexOf(currentNode) !== -1
+          const b = /\b/
+          const regex = new RegExp(b.source + currentNode + b.source)
+          nodeInReturn = regex.test(reqQuery.return)
         }
         else nodeInReturn = false
         const additionalNodeCondition = nodeInReturn && nodeNotInFilters && nodeNotRequested
@@ -183,6 +185,11 @@ class searchService {
 
         q = helpers.dequeue(q)
       }
+
+
+
+
+
       return resolve(optionals.join(' '))
     })
   }
