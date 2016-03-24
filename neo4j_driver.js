@@ -2,6 +2,7 @@
 const	request	= require('superagent')
 const	_				= require('lodash')
 const	Promise = require('bluebird')
+const NeoCrawlError = require('./utils/NeoCrawlError')
 
 class DB {
 
@@ -14,7 +15,7 @@ class DB {
   static serializer(resolve, reject){
     return (err, result) => {
       const resp = JSON.parse(result.text)
-      if (resp.errors.length > 0) {return reject(resp.errors[0])}
+      if (resp.errors.length > 0) reject(new NeoCrawlError({status: 'INTERNAL_SERVER_ERROR',response: resp.errors}))
       let rezObj = resp.results
       rezObj = _.map(_.flatten(_.map(rezObj, 'data')), data => {
         if (data.row.length > 1) return data.row

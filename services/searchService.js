@@ -231,7 +231,7 @@ class searchService {
         console.log(`[ DBQuery ] => ${reqQuery.node} <= (hr): %ds %dms`, queryStop[0], queryStop[1]/1000000)
       }
       catch (err){
-        return err
+        throw err
       }
 
 
