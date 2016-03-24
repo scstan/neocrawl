@@ -202,7 +202,7 @@ class searchService {
       const node         = reqQuery.node
       const skip         = parseInt(reqQuery.offset) * parseInt(reqQuery.limit) - parseInt(reqQuery.limit) || 0
       const limit        = parseInt(reqQuery.limit) || 10
-      const orderBy      = reqQuery.orderBy ? 'ORDER BY ' + node + '.' + reqQuery.orderBy + ' ' + reqQuery.direction : ''
+      const orderBy      = reqQuery.orderBy ? 'ORDER BY ' + reqQuery.orderBy + ' ' + reqQuery.direction : ''
       let builtSearchQuery = ''
       let basicQuery     = []
 
