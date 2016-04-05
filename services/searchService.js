@@ -53,6 +53,7 @@ class searchService {
       value = [value]
     }
     value = _.map(value, item => {
+      if (isNaN(parseInt(item)) && item.indexOf('(') > -1) return item
       if (isNaN(parseInt(item)) && item.indexOf('"') === -1){
         return '"' + item + '"'
       }
@@ -60,7 +61,7 @@ class searchService {
         return parseInt(item)
       }
     })
-    return value.length === 1? value[0]:value
+    return value.length === 1?value[0]:value
   }
 
   static buildFilter (label, property, filterObj) {
@@ -68,7 +69,7 @@ class searchService {
     const filter = objectCheck ? Object.keys(filterObj)[0] : 'eq'
     let value = objectCheck ? filterObj[filter] : filterObj
     let nodeProperty = label + '.' + property
-    if (filter !== 'like' && filter !== 'regex' && value.constructor !== Boolean) {
+    if (filter !== 'like' && filter !== 'regex' && !_.isBoolean(value)) {
       value = this.transfPseudoStr(value)
     }
     if (property.toLowerCase() === 'id'){
@@ -168,7 +169,7 @@ class searchService {
         where                         = this.buildWhere(reqQuery.filters, currentNodeProperties, currentNode, where)
         const nodeNotInFilters        = JSON.stringify(reqQuery.filters).indexOf(currentNode+'.') === -1
         const nodeNotRequested        = reqQuery.node !== currentNode
-        let nodeInReturn            = false
+        let nodeInReturn              = false
         if (reqQuery.return) {
           const regex = new RegExp(`\\b${currentNode}\\b`)
           nodeInReturn = regex.test(reqQuery.return)
