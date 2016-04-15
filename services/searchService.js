@@ -121,7 +121,11 @@ class searchService {
     if (withArr.indexOf(node) === -1) {
       withArr.push(node)
     }
-    const customReturnExists = customReturn && customReturn.indexOf(withArr[withArr.length-1]) === -1
+    let returnFormat = customReturn
+    if (helpers.isJson(customReturn)) {
+      returnFormat = customReturn.replace(/"/g,'')
+    }
+    const customReturnExists = returnFormat && returnFormat.indexOf(withArr[withArr.length-1]) === -1
     const withArrContainsCurrentNode = withArr[withArr.length-1] !== node
     if (withArr.length > 0 && customReturnExists && withArrContainsCurrentNode) {
       withArr.pop()
@@ -216,9 +220,23 @@ class searchService {
         basicQuery.push('MATCH (' + node + ':' + node + ') WITH ' + node + ' ')
       }
       let query         = basicQuery.slice(0)
-      const builtReturn = this.buildReturn(node,reqQuery)
+      let builtReturn = this.buildReturn(node,reqQuery)
+
+      if (helpers.isJson(builtReturn)) {
+        builtReturn = JSON.parse(builtReturn)
+        let finalWith =  ['WITH']
+        let withArr = []
+        _.forOwn(builtReturn, (value,key) => {
+          withArr.push(`${value} AS ${key}`)
+          builtReturn[key] = key
+        })
+        builtReturn = JSON.stringify(builtReturn).replace(/"/g,'')
+        finalWith.push(withArr.join(', '))
+        query.push(finalWith.join(' '))
+      }
       query.push(orderBy + ' RETURN DISTINCT ' + builtReturn + ' SKIP ' + skip + ' LIMIT ' + limit)
       query             = query.join(' ')
+      console.log(query)
       let countQuery    = basicQuery.slice(0)
       countQuery.push('RETURN COUNT(DISTINCT ' + node + ')')
       countQuery        = countQuery.join(' ')
