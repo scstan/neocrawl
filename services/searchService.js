@@ -49,7 +49,7 @@ class searchService {
   }
 
   static transfPseudoStr(value) {
-    if (value.constructor !== Array) {
+    if (!_.isArray(value)) {
       value = [value]
     }
     value = _.map(value, item => {
@@ -65,7 +65,7 @@ class searchService {
   }
 
   static buildFilter (label, property, filterObj) {
-    const objectCheck = filterObj.constructor === Object
+    const objectCheck = filterObj?filterObj.constructor === Object:false
     const filter = objectCheck ? Object.keys(filterObj)[0] : 'eq'
     let value = objectCheck ? filterObj[filter] : filterObj
     let nodeProperty = label + '.' + property
@@ -77,6 +77,12 @@ class searchService {
     }
 
     switch (filter) {
+      case 'isRelated':
+        value = value.replace(/"/g,'')
+        return `(${label}:${label})-[]-(:${value})`
+      case 'notRelated':
+        value = value.replace(/"/g,'')
+        return `NOT (${label}:${label})-[]-(:${value})`
       case 'between':
         return nodeProperty + operatorMap['ge'] + value[0] + ' and ' + nodeProperty + operatorMap['le'] + value[1]
       case 'in':
@@ -160,7 +166,7 @@ class searchService {
           tree[currentNode].initialQuery = baseOptional
         }
         else {
-          baseOptional                   = 'MATCH (' + currentNode + ':' + currentNode + ')'
+          baseOptional            = 'MATCH (' + currentNode + ':' + currentNode + ')'
           tree[currentNode].initialQuery = baseOptional
         }
         let where                 = ['WHERE']
@@ -169,6 +175,7 @@ class searchService {
         })
 
         let currentNodeProperties     = this.getNodeProperties(currentNode, graph)
+        currentNodeProperties.push('node')
         currentNodeProperties         = _.intersection(currentNodeProperties, properties)
         where                         = this.buildWhere(reqQuery.filters, currentNodeProperties, currentNode, where)
         const nodeNotInFilters        = JSON.stringify(reqQuery.filters).indexOf(currentNode+'.') === -1
@@ -191,11 +198,6 @@ class searchService {
 
         q = helpers.dequeue(q)
       }
-
-
-
-
-
       return resolve(optionals.join(' '))
     })
   }
